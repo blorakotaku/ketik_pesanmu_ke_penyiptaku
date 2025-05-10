@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Curhat Yuk</title>
+  <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/1688/1688449.png" type="image/png">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(-45deg, #3a1c71, #d76d77, #ffaf7b, #2b5876);
+      background-size: 400% 400%;
+      animation: gradientBG 10s ease infinite;
+      color: white;
+      text-align: center;
+      overflow-x: hidden;
+    }
+    @keyframes gradientBG {
+      0% {background-position: 0% 50%;}
+      50% {background-position: 100% 50%;}
+      100% {background-position: 0% 50%;}
+    }
+    h1 {
+      margin-top: 40px;
+      font-size: 2.5em;
+    }
+    .floating-label {
+      position: relative;
+      width: 80%;
+      max-width: 400px;
+      margin: 30px auto;
+    }
+    .floating-label input {
+      width: 100%;
+      padding: 20px 10px 10px 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 10px;
+      outline: none;
+      color: white;
+      background-color: rgba(255,255,255,0.1);
+    }
+    .floating-label label {
+      position: absolute;
+      top: 18px;
+      left: 12px;
+      font-size: 16px;
+      color: rgba(255,255,255,0.7);
+      pointer-events: none;
+      transition: all 0.3s ease;
+    }
+    .floating-label input:focus + label,
+    .floating-label input:not(:placeholder-shown) + label {
+      top: -10px;
+      left: 10px;
+      font-size: 12px;
+      background-color: rgba(0, 0, 0, 0.5);
+      padding: 0 5px;
+      border-radius: 5px;
+    }
+    textarea {
+      width: 80%;
+      max-width: 400px;
+      height: 100px;
+      margin: 20px auto;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      outline: none;
+      resize: none;
+      font-size: 16px;
+    }
+    button {
+      padding: 12px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 10px;
+      background: #ffffffcc;
+      color: #333;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background 0.3s;
+    }
+    button:hover { background: #fffa; }
+    #sapaan {
+      font-size: 1.3em;
+      margin-top: 20px;
+      white-space: nowrap;
+      overflow: hidden;
+      border-right: 2px solid white;
+      width: 0;
+    }
+    #waktu {
+      margin-top: 10px;
+      font-size: 1.1em;
+      background: rgba(0,0,0,0.4);
+      padding: 8px 14px;
+      border-radius: 12px;
+      display: inline-block;
+    }
+    .floating-text {
+      position: fixed;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.4);
+      padding: 6px 12px;
+      font-size: 14px;
+      border-radius: 20px;
+      animation: floatText 10s infinite linear;
+      z-index: 999;
+    }
+    @keyframes floatText {
+      0% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(-10px); }
+      100% { transform: translateX(-50%) translateY(0); }
+    }
+    #chatBotIcon {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 60px;
+      height: 60px;
+      background-color: #fff;
+      border-radius: 50%;
+      background-image: url('https://cdn-icons-png.flaticon.com/512/4712/4712027.png');
+      background-size: cover;
+      cursor: pointer;
+      z-index: 1000;
+      box-shadow: 0 0 12px rgba(0,0,0,0.4);
+    }
+    #chatBotBox {
+      display: none;
+      position: fixed;
+      bottom: 90px;
+      right: 20px;
+      width: 260px;
+      background-color: rgba(0,0,0,0.85);
+      padding: 15px;
+      border-radius: 10px;
+      color: white;
+      z-index: 1000;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+    #chatLog {
+      max-height: 200px;
+      overflow-y: auto;
+      margin-bottom: 10px;
+      text-align: left;
+      font-size: 14px;
+    }
+    #chatInput {
+      width: 100%;
+      padding: 6px;
+      border: none;
+      border-radius: 6px;
+    }
+    #chatBotBox.fade-in {
+      animation: fadeIn 0.4s ease;
+    }
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(20px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+    audio { display: none; }
+  </style>
+</head>
+<body>
+  <div class="floating-text">👋 Halo! Ayo kirimkan pesan ke penciptaku Rizky. Aku dibuat untuk membantumu.</div>
+
+  <h1>📝 Curhat Yuk!</h1>
+  <div id="waktu">Waktu sekarang: ...</div>
+
+  <div class="floating-label">
+    <input type="text" id="nama" placeholder=" " required>
+    <label for="nama">Masukkan Nama</label>
+  </div>
+
+  <div class="floating-label">
+    <input type="text" id="nomer" placeholder=" " required>
+    <label for="nomer">Masukkan Nomor WA</label>
+  </div>
+
+  <button onclick="mulaiCurhat()">Mulai Curhat</button>
+
+  <div id="formCurhat" style="display:none;">
+    <div id="sapaan"></div>
+    <textarea id="curhat" placeholder="Curhat kamu di sini..."></textarea><br>
+    <button onclick="kirimCurhat()">Kirim ke Telegram</button>
+  </div>
+
+  <div id="chatBotIcon" onclick="toggleChatBot()"></div>
+  <div id="chatBotBox">
+    <div id="chatLog"></div>
+    <input type="text" id="chatInput" placeholder="Tulis pesan..." onkeypress="handleKeyPress(event)">
+  </div>
+
+  <audio autoplay loop>
+    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" type="audio/mpeg">
+    Browser kamu tidak mendukung audio.
+  </audio>
+
+  <script>
+    function mulaiCurhat() {
+      const nama = document.getElementById('nama').value.trim();
+      const nomer = document.getElementById('nomer').value.trim();
+      if (!nama || !nomer) {
+        alert("Isi nama dan nomor WA dulu ya!");
+        return;
+      }
+      const sapaanText = `Halo ${nama}, kamu mau curhat apa hari ini?`;
+      const sapaanElem = document.getElementById('sapaan');
+      sapaanElem.innerHTML = "";
+      sapaanElem.style.width = "0";
+      document.getElementById('formCurhat').style.display = 'block';
+      let i = 0;
+      function typeEffect() {
+        if (i < sapaanText.length) {
+          sapaanElem.innerHTML += sapaanText.charAt(i);
+          i++;
+          setTimeout(typeEffect, 60);
+        }
+      }
+      typeEffect();
+      const suara = new SpeechSynthesisUtterance(sapaanText);
+      suara.lang = 'id-ID';
+      speechSynthesis.speak(suara);
+    }
+
+    function kirimCurhat() {
+      const nama = document.getElementById('nama').value.trim();
+      const nomer = document.getElementById('nomer').value.trim();
+      const curhat = document.getElementById('curhat').value.trim();
+      if (!curhat) {
+        alert("Tulis curhat kamu dulu.");
+        return;
+      }
+      const token = '8051593906:AAFeMij6V_XGMcRsL1Jkf5XpP_P3VAKo0Mo';
+      const chat_id = '6374002294';
+      const pesan = `Nama: ${nama}\nNomor WA: ${nomer}\nCurhat: ${curhat}`;
+      fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ chat_id: chat_id, text: pesan })
+      })
+      .then(res => res.json())
+      .then(() => {
+        alert("Curhat kamu berhasil dikirim!");
+        document.getElementById('curhat').value = "";
+      })
+      .catch(err => {
+        alert("Gagal mengirim curhat.");
+        console.error("Error:", err);
+      });
+    }
+
+    function toggleChatBot() {
+      const box = document.getElementById("chatBotBox");
+      if (box.style.display === "none" || box.style.display === "") {
+        box.style.display = "block";
+        box.classList.add("fade-in");
+      } else {
+        box.style.display = "none";
+        box.classList.remove("fade-in");
+      }
+    }
+
+    function handleKeyPress(e) {
+      if (e.key === "Enter") {
+        const input = document.getElementById("chatInput");
+        const msg = input.value.trim();
+        if (!msg) return;
+        addChatMessage("Kamu: " + msg);
+        input.value = "";
+
+        let response = "maaf uy sementara bot blm bisa digunakan oleh penghuna lain bot ini khusus penyiptaku";
+        if (msg.toLowerCase().includes("menu")) response = "pilih menu berikut ini                    .halo                                      .assalamualaikum                           .nama                                      .siapa                                     .woy                                       .spam                                      .tiktokmu                                  .";
+        else if (msg.toLowerCase().includes("assalamualaikum")) response = "Waalaikumsalam, semoga harimu menyenangkan!";
+        else if (msg.toLowerCase().includes("siapa")) response = "Aku adalah bot pembantu buatan Rizky.";
+        else if (msg.toLowerCase().includes("siapa")) response = "Aku adalah bot pembantu buatan Rizky.";
+        else if (msg.toLowerCase().includes("siapa")) response = "Aku adalah bot pembantu buatan Rizky.";
+        else if (msg.toLowerCase().includes("siapa")) response = "Aku adalah bot pembantu buatan Rizky.";
+        else if (msg.toLowerCase().includes("siapa")) response = "Aku adalah bot pembantu buatan Rizky.";
+        else if (msg.toLowerCase().includes("siapa")) response = "Aku adalah bot pembantu buatan Rizky.";
+        else if (msg.toLowerCase().includes("siapa")) response = "Aku adalah bot pembantu buatan Rizky.";
+        else if (msg.toLowerCase().includes("siapa")) response = "Aku adalah bot pembantu buatan Rizky.";
+        else if (msg.toLowerCase().includes("siapa")) response = "Aku adalah bot pembantu buatan Rizky.";
+        else if (msg.toLowerCase().includes("siapa")) response = "Aku adalah bot pembantu buatan Rizky.";
+        else if (msg.toLowerCase().includes("siapa")) response = "Aku adalah bot pembantu buatan Rizky.";
+        else if (msg.toLowerCase().includes("siapa")) response = "Aku adalah bot pembantu buatan Rizky.";
+        else if (msg.toLowerCase().includes("siapa")) response = "Aku adalah bot pembantu buatan Rizky.";
+        else if (msg.toLowerCase().includes("siapa")) response = "Aku adalah bot pembantu buatan Rizky.";
+        else if (msg.toLowerCase().includes("siapa")) response = "Aku adalah bot pembantu buatan Rizky.";
+
+        setTimeout(() => {
+          addChatMessage("Bot: " + response);
+          const suaraBot = new SpeechSynthesisUtterance(response);
+          suaraBot.lang = "id-ID";
+          speechSynthesis.speak(suaraBot);
+        }, 500);
+      }
+    }
+
+    function addChatMessage(msg) {
+      const log = document.getElementById("chatLog");
+      const div = document.createElement("div");
+      div.textContent = msg;
+      log.appendChild(div);
+      log.scrollTop = log.scrollHeight;
+    }
+
+    setInterval(() => {
+      const now = new Date();
+      const hari = now.toLocaleDateString('id-ID', { weekday: 'long' });
+      const tanggal = now.toLocaleDateString('id-ID');
+      const jam = now.toLocaleTimeString('id-ID');
+      document.getElementById('waktu').innerText = `${hari}, ${tanggal} - ${jam}`;
+    }, 1000);
+  </script>
+</body>
+</html>
